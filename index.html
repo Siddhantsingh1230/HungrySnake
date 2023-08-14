@@ -88,27 +88,27 @@
           snakeY += veloY * boxSize;
           ctx.fillRect(snakeX, snakeY, boxSize, boxSize);
           // Game Over Conditions
-          if (
-            //out of bounds
-            snakeX < 0 ||
-            snakeX > worldSize * boxSize ||
-            snakeY < 0 ||
-            snakeY > worldSize * boxSize
-          ) {
-            gameOver = true;
-            alert("GameOver");
-            // reloading game on lose
-            location.reload();
-          }
-          for (let i = 0; i < snakeBody.length; i++) {
-            //collision itself
-            if (snakeX == snakeBody[i][0] && snakeY == snakeBody[i][1]) {
-              gameOver = true;
-              alert("GameOver");
-              // reloading game on lose
-              location.reload();
-            }
-          }
+          // if (
+          //   //out of bounds
+          //   snakeX < 0 ||
+          //   snakeX > worldSize * boxSize ||
+          //   snakeY < 0 ||
+          //   snakeY > worldSize * boxSize
+          // ) {
+          //   gameOver = true;
+          //   alert("GameOver");
+          //   // reloading game on lose
+          //   location.reload();
+          // }
+          // for (let i = 0; i < snakeBody.length; i++) {
+          //   //collision itself
+          //   if (snakeX == snakeBody[i][0] && snakeY == snakeBody[i][1]) {
+          //     gameOver = true;
+          //     alert("GameOver");
+          //     // reloading game on lose
+          //     location.reload();
+          //   }
+          // }
         };
 
         //listening to key events
