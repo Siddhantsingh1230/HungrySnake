@@ -1,0 +1,173 @@
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>&lt;HungrySnake&gt;</title>
+      <style>
+        body,
+        html {
+          width: 100%;
+          height: 100%;
+          background: #2d2d2d;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+      </style>
+    </head>
+    <body>
+      <canvas id="world"></canvas>
+      <script>
+        // Canvas/Context => World
+        const world = document.getElementById("world");
+        const ctx = world.getContext("2d");
+        // Whole world is made up of a grid of below size
+        const boxSize = 20;
+        const worldSize = 25; // 25 rows and 25 columns in the world grid
+        // setting world height and width
+        world.width = world.height = worldSize * boxSize;
+        //Snake Head
+        let snakeX = boxSize * Math.floor(Math.random() * worldSize);
+        let snakeY = boxSize * Math.floor(Math.random() * worldSize);
+        //Snake Velocity [mag + diection]
+        let veloX = 0;
+        let veloY = 0;
+        //snakeBody => an array which contains array of x and y values of successive body parts
+        let snakeBody = [];
+        //Snake Food
+        let foodX;
+        let foodY;
+        const createFood = () => {
+          foodX = boxSize * Math.floor(Math.random() * worldSize);
+          foodY = boxSize * Math.floor(Math.random() * worldSize);
+        };
+        createFood();
+        //Frames per Second
+        const fps = 10; // you can modify this value to controll the speed of the snake
+        // GameOver
+        let gameOver = false;
+
+        //drawing world
+        const drawGame = () => {
+          // Exit IF Game Over
+          if (gameOver) {
+            return;
+          }
+          //handle Direction
+          handleDirection();
+          //world Bg
+          ctx.fillStyle = "#000";
+          ctx.fillRect(0, 0, world.width, world.height);
+          // food color
+          ctx.fillStyle = "deeppink";
+          ctx.fillRect(foodX, foodY, boxSize, boxSize);
+          // food snake collison
+          if (foodX == snakeX && foodY == snakeY) {
+            snakeBody.push([foodX, foodY]);
+            createFood();
+          }
+          for (let i = snakeBody.length - 1; i > 0; i--) {
+            snakeBody[i] = snakeBody[i - 1];
+          }
+          if (snakeBody.length) {
+            snakeBody[0] = [snakeX, snakeY];
+          }
+          for (let i = 0; i < snakeBody.length; i++) {
+            ctx.fillStyle = "lightskyblue";
+            ctx.fillRect(snakeBody[i][0], snakeBody[i][1], boxSize, boxSize);
+          }
+          // snake color
+          ctx.fillStyle = "lightskyblue";
+          snakeX += veloX * boxSize;
+          snakeY += veloY * boxSize;
+          ctx.fillRect(snakeX, snakeY, boxSize, boxSize);
+          // Game Over Conditions
+          if (
+            //out of bounds
+            snakeX < 0 ||
+            snakeX > worldSize * boxSize ||
+            snakeY < 0 ||
+            snakeY > worldSize * boxSize
+          ) {
+            gameOver = true;
+            alert("GameOver");
+            // reloading game on lose
+            location.reload();
+          }
+          for (let i = 0; i < snakeBody.length; i++) {
+            //collision itself
+            if (snakeX == snakeBody[i][0] && snakeY == snakeBody[i][1]) {
+              gameOver = true;
+              alert("GameOver");
+              // reloading game on lose
+              location.reload();
+            }
+          }
+        };
+
+        //listening to key events
+        const handleDirection = (e) => {
+          if (findDirection(snakeX, snakeY, foodX, foodY) === "ArrowUp" && timeControl && veloY != 1) {
+            // console.log("Up");
+            veloX = 0;
+            veloY = -1;
+          }
+          if (findDirection(snakeX, snakeY, foodX, foodY) === "ArrowDown" && timeControl && veloY != -1) {
+            // console.log("Down");
+            veloX = 0;
+            veloY = 1;
+          }
+          if (findDirection(snakeX, snakeY, foodX, foodY) === "ArrowLeft" && timeControl && veloX != 1) {
+            // console.log("Left");
+            veloX = -1;
+            veloY = 0;
+          }
+          if (findDirection(snakeX, snakeY, foodX, foodY) === "ArrowRight" && timeControl && veloX != -1) {
+            // console.log("Right");
+            veloX = 1;
+            veloY = 0;
+          }
+          
+        };
+        //Concious Snake
+        const findDirection = (snakeX, snakeY, foodX, foodY) => {
+          if (snakeX < foodX) {
+            return "ArrowRight";
+          } else if (snakeX > foodX) {
+            return "ArrowLeft";
+          } else if (snakeY < foodY) {
+            return "ArrowDown";
+          } else if (snakeY > foodY) {
+            return "ArrowUp";
+          } else {
+            return "same";
+          }
+        };
+        const gamePause=(e)=>{
+          if (e.key === " " || e.key === "Spacebar") {
+            if (timeControl) {
+              clearInterval(timeControl);
+              timeControl = null;
+            } else {
+              // Start the Game  again
+              timeControl = setInterval(() => {
+                drawGame();
+              }, 1000 / fps);
+            }
+          }
+        }
+
+        window.addEventListener("keyup", gamePause);
+        //Executing the game
+        let timeControl = setInterval(() => {
+          drawGame();
+        }, 1000 / fps);
+      </script>
+    </body>
+  </html>
